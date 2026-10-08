@@ -43,9 +43,9 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.97 0.012 90);
+  --background: oklch(0.99 0.003 140);
   --foreground: oklch(0.26 0.03 155);
-  --card: oklch(0.99 0.006 90);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.26 0.03 155);
   --popover: oklch(0.99 0.006 90);
   --popover-foreground: oklch(0.26 0.03 155);
@@ -68,6 +68,7 @@
   --spruce-deep: oklch(0.28 0.045 160);
   --cream: oklch(0.97 0.012 90);
   --paper: oklch(0.99 0.006 90);
+  --hero-overlay: linear-gradient(90deg, oklch(0.16 0.025 155 / 0.82), oklch(0.16 0.025 155 / 0.4) 58%, oklch(0.16 0.025 155 / 0.12));
 }
 
 @layer base {
@@ -83,11 +84,21 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-body);
+    letter-spacing: 0;
   }
+
+  section[id] { scroll-margin-top: 5rem; }
 
   ::selection {
     background-color: color-mix(in oklab, var(--honey) 35%, transparent);
   }
+}
+
+.hero-shade { background: var(--hero-overlay); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 @keyframes rise-in {
