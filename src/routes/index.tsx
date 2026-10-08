@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Pause, Play, Menu, X, Check, Mail } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Sparkles,
@@ -8,17 +11,17 @@ import {
   Phone,
   MapPin,
   Clock,
-  Star,
   ArrowRight,
   Leaf,
   ShieldCheck,
-  BadgeCheck,
 } from "lucide-react";
 
-import heroImg from "@/assets/hero.jpg";
-import beforeImg from "@/assets/before.jpg";
-import afterImg from "@/assets/after.jpg";
-import detailImg from "@/assets/detail.jpg";
+import videoAsset from "@/assets/hero-cleaning.mp4.asset.json";
+import webmAsset from "@/assets/hero-cleaning.webm.asset.json";
+import posterAsset from "@/assets/cleaning-poster.jpg.asset.json";
+import cleanerAsset from "@/assets/cleaner.jpg.asset.json";
+import kitchenAsset from "@/assets/kitchen.jpg.asset.json";
+import suppliesAsset from "@/assets/supplies.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,13 +30,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Clean & Co delivers premium residential and commercial cleaning in Portland. Eco-safe products, vetted pros, and a spotless guarantee.",
+          "Clean & Co delivers premium residential and commercial cleaning in Portland. One-time and recurring cleaning for homes, offices and studios.",
       },
       { property: "og:title", content: "Clean & Co — Premium Home & Office Cleaning" },
       {
         property: "og:description",
         content:
-          "Rooms that feel fresh the moment you walk in. Premium home and office cleaning with a spotless guarantee.",
+          "Rooms that feel fresh the moment you walk in. Thoughtful home and office cleaning in Portland.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -68,126 +71,77 @@ const services = [
     icon: KeyRound,
     num: "04",
     title: "Move In / Move Out",
-    desc: "Handover-ready and deposit-protected. We make empty rooms gleam for the next chapter.",
+    desc: "A fresh start for the next chapter. Thorough cleaning for empty homes, from cupboards to floors.",
     price: "From $390 / visit",
   },
 ];
 
-const testimonials = [
-  {
-    quote:
-      "It felt like a different apartment. I keep turning on the lights just to watch the place gleam.",
-    name: "Maya Reynolds",
-    role: "Weekly home client, 3 years",
-  },
-  {
-    quote:
-      "Our studio finally looks like the team we want to hire. Calm, bright, and completely clean.",
-    name: "Dana Reyes",
-    role: "Office client, biweekly",
-  },
-  {
-    quote:
-      "They got our full deposit back after a move-out clean. Worth every penny, twice over.",
-    name: "Tom & Priya Shah",
-    role: "Move-out clean, Laurelhurst",
-  },
-];
-
 function Index() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      if (media.matches) video.pause();
+      else video.play().catch(() => setPlaying(false));
+    };
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const toggleVideo = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) video.play().catch(() => setPlaying(false));
+    else video.pause();
+  };
   return (
     <div className="min-h-screen bg-background font-body text-foreground antialiased">
       {/* ── Nav ── */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <a href="#top" className="font-display text-xl font-semibold tracking-tight">
+          <a href="#top" className="font-display text-xl font-semibold tracking-normal">
             Clean <span className="text-spruce">&amp;</span> Co
           </a>
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
             <a href="#services" className="transition-colors hover:text-foreground">Services</a>
             <a href="#results" className="transition-colors hover:text-foreground">Results</a>
-            <a href="#voices" className="transition-colors hover:text-foreground">Reviews</a>
+            <a href="#voices" className="transition-colors hover:text-foreground">Our approach</a>
             <a href="#visit" className="transition-colors hover:text-foreground">Contact</a>
           </nav>
-          <a
-            href="#visit"
-            className="rounded-full bg-spruce px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-spruce-deep"
-          >
-            Book a clean
-          </a>
+          <div className="flex items-center gap-2">
+            <Button asChild className="rounded-full px-5"><a href="#visit">Book a clean <ArrowRight /></a></Button>
+            <Button variant="ghost" size="icon" className="md:hidden" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button>
+          </div>
         </div>
+        {menuOpen && <nav className="flex flex-col gap-4 border-t border-border px-6 py-5 text-sm md:hidden" aria-label="Mobile navigation">
+          {[['services','Services'],['results','Our standard'],['voices','Our approach'],['visit','Contact']].map(([id,label]) => <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>{label}</a>)}
+        </nav>}
       </header>
 
-      {/* ── Hero ── */}
-      <section id="top" className="mx-auto max-w-6xl px-6 pb-20 pt-12 md:pt-20">
-        <div className="grid items-center gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-6">
-            <p className="animate-rise inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-spruce">
-              <Leaf className="size-3.5" />
-              Residential &amp; commercial cleaning
-            </p>
-            <h1 className="animate-rise mt-6 font-display text-5xl font-medium leading-[1.02] tracking-tight md:text-6xl lg:text-7xl">
-              Rooms that feel{" "}
-              <em className="text-spruce">fresh</em> the moment you walk in.
-            </h1>
-            <p className="animate-rise-slow mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
-              Calm, spotless spaces for the people who live and work in them. We
-              show up quietly, use eco-safe products, and leave everything gleaming.
-            </p>
-            <div className="animate-rise-slow mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href="#visit"
-                className="inline-flex items-center gap-2 rounded-full bg-spruce px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-spruce-deep"
-              >
-                Book your first clean
-                <ArrowRight className="size-4" />
-              </a>
-              <a
-                href="#services"
-                className="rounded-full border border-border px-7 py-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
-              >
-                See services
-              </a>
+      <section id="top" className="relative isolate overflow-hidden text-primary-foreground">
+        <video ref={videoRef} poster={posterAsset.url} muted loop playsInline preload="metadata" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} className="absolute inset-0 -z-20 h-full w-full object-cover" aria-label="Real footage of a table being carefully cleaned">
+          <source src={webmAsset.url} type="video/webm" />
+          <source src={videoAsset.url} type="video/mp4" />
+        </video>
+        <div className="hero-shade absolute inset-0 -z-10" />
+        <div className="mx-auto flex min-h-[560px] max-w-6xl items-center px-6 py-20 md:min-h-[620px]">
+          <div className="max-w-2xl">
+            <p className="animate-rise flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em]"><Leaf className="size-4 text-honey" /> Portland homes. Fresh starts.</p>
+            <h1 className="animate-rise mt-6 font-display text-6xl font-medium leading-[1.05] md:text-7xl">Clean &amp; Co</h1>
+            <p className="animate-rise mt-4 font-display text-3xl leading-tight md:text-4xl">A little care. A whole lot of clean.</p>
+            <p className="animate-rise-slow mt-6 max-w-md text-base leading-relaxed text-primary-foreground/85">Thoughtful cleaning for the spaces you live and work in. From the everyday tidy to a fresh-start deep clean, we take care of the details.</p>
+            <div className="animate-rise-slow mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg" className="h-12 rounded-full bg-honey text-accent-foreground hover:bg-honey-deep"><a href="#visit">Request a clean <ArrowRight /></a></Button>
+              <Button asChild variant="outline" size="lg" className="h-12 rounded-full border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><a href="#services">Explore services</a></Button>
             </div>
-            <div className="animate-rise-slow mt-12 flex items-center gap-8">
-              <div>
-                <div className="flex items-center gap-1.5 font-display text-3xl font-medium">
-                  4.9 <Star className="size-5 fill-honey text-honey" />
-                </div>
-                <div className="mt-1 text-sm text-muted-foreground">1,200+ verified reviews</div>
-              </div>
-              <div className="h-10 w-px bg-border" />
-              <div>
-                <div className="font-display text-3xl font-medium">18k+</div>
-                <div className="mt-1 text-sm text-muted-foreground">cleans completed</div>
-              </div>
-              <div className="h-10 w-px bg-border" />
-              <div>
-                <div className="font-display text-3xl font-medium">12 yrs</div>
-                <div className="mt-1 text-sm text-muted-foreground">in the neighborhood</div>
-              </div>
-            </div>
-          </div>
-          <div className="lg:col-span-6">
-            <div className="relative">
-              <img
-                src={heroImg}
-                alt="Sunlit, freshly cleaned living room with gleaming oak floors"
-                width={1024}
-                height={1280}
-                className="aspect-[4/5] w-full rounded-2xl object-cover shadow-2xl ring-1 ring-border"
-              />
-              <div className="absolute -bottom-6 -left-4 rounded-xl bg-card/90 p-5 shadow-xl ring-1 ring-border backdrop-blur-md sm:-left-8">
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-spruce">
-                  <BadgeCheck className="size-4" /> Spotless guarantee
-                </div>
-                <p className="mt-1.5 max-w-52 text-sm text-muted-foreground">
-                  Not gleaming? We come back within 24 hours — free.
-                </p>
-              </div>
-            </div>
+            <p className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-foreground/80"><span className="flex items-center gap-2"><Check className="size-4 text-honey" /> Supplies included</span><span className="flex items-center gap-2"><Check className="size-4 text-honey" /> One-time &amp; recurring</span><span className="flex items-center gap-2"><Check className="size-4 text-honey" /> Portland &amp; nearby</span></p>
           </div>
         </div>
+        <Button variant="ghost" size="icon" className="absolute bottom-5 right-6 rounded-full border border-primary-foreground/30 bg-foreground/30 text-primary-foreground hover:bg-foreground/50 hover:text-primary-foreground" onClick={toggleVideo} aria-label={playing ? "Pause background video" : "Play background video"} title={playing ? "Pause background video" : "Play background video"}>{playing ? <Pause /> : <Play />}</Button>
       </section>
 
       {/* ── Services ── */}
@@ -196,11 +150,11 @@ function Index() {
           <div className="grid gap-10 md:grid-cols-12">
             <div className="md:col-span-4">
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-spruce">( 01 ) — Services</p>
-              <h2 className="mt-5 font-display text-4xl font-medium leading-tight tracking-tight md:text-5xl">
+              <h2 className="mt-5 font-display text-4xl font-medium leading-tight tracking-normal md:text-5xl">
                 Four ways we make a place shine.
               </h2>
               <p className="mt-5 max-w-xs text-muted-foreground">
-                Every visit follows our 50-point checklist, tailored to your space
+                Every visit follows a thoughtful checklist, tailored to your space
                 and your schedule.
               </p>
             </div>
@@ -210,7 +164,7 @@ function Index() {
                   <a
                     key={s.num}
                     href="#visit"
-                    className="group flex items-center justify-between gap-6 py-6 transition-colors"
+                    className="group flex flex-col items-start justify-between gap-4 py-6 transition-colors sm:flex-row sm:items-center"
                   >
                     <div className="flex items-start gap-5">
                       <span className="mt-1 grid size-10 shrink-0 place-items-center rounded-full bg-spruce/10 text-spruce">
@@ -238,57 +192,46 @@ function Index() {
       <section id="results" className="mx-auto max-w-6xl px-6 py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-12">
           <div className="order-2 grid grid-cols-2 gap-4 lg:order-1 lg:col-span-7">
-            <figure className="relative overflow-hidden rounded-xl ring-1 ring-border">
+            <figure className="relative overflow-hidden rounded-lg ring-1 ring-border">
               <img
-                src={beforeImg}
-                alt="Kitchen before a professional clean"
+                src={cleanerAsset.url}
+                alt="A cleaner wiping a kitchen countertop"
                 width={1024}
                 height={1280}
                 loading="lazy"
                 className="aspect-[4/5] w-full object-cover"
               />
               <figcaption className="absolute left-3 top-3 rounded-full bg-foreground/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-background">
-                Before
+                The details
               </figcaption>
             </figure>
-            <figure className="relative overflow-hidden rounded-xl ring-1 ring-border">
+            <figure className="relative overflow-hidden rounded-lg ring-1 ring-border">
               <img
-                src={afterImg}
-                alt="The same style of kitchen gleaming after a Clean & Co deep clean"
+                src={kitchenAsset.url}
+                alt="A bright, tidy kitchen with white cabinetry"
                 width={1024}
                 height={1280}
                 loading="lazy"
                 className="aspect-[4/5] w-full object-cover"
               />
               <figcaption className="absolute left-3 top-3 rounded-full bg-honey px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-accent-foreground">
-                After
+                The feeling
               </figcaption>
             </figure>
           </div>
           <div className="order-1 lg:order-2 lg:col-span-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-spruce">( 02 ) — Before &amp; after</p>
-            <h2 className="mt-5 font-display text-4xl font-medium leading-tight tracking-tight md:text-5xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-spruce">( 02 ) — Our standard</p>
+            <h2 className="mt-5 font-display text-4xl font-medium leading-tight tracking-normal md:text-5xl">
               The gleam is the point.
             </h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">
-              Every job ends with a walk-through and a final polish pass. If the
-              light doesn't catch it, we come back — that's the guarantee in
-              writing.
+              The kitchen counter. The bathroom mirror. The corners that are easy to miss.
+              We bring a careful eye to the whole space, then finish with a final check
+              so you can simply come home and settle in.
             </p>
-            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-border pt-8">
-              <div>
-                <p className="font-display text-3xl font-medium">6,200+</p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">spaces cleaned</p>
-              </div>
-              <div>
-                <p className="font-display text-3xl font-medium">98%</p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">clients return</p>
-              </div>
-              <div>
-                <p className="font-display text-3xl font-medium">24 hr</p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">re-clean promise</p>
-              </div>
-            </div>
+            <ul className="mt-8 space-y-4 border-t border-border pt-6 text-sm">
+              {['Kitchen and bathroom surfaces','Floors, fixtures and finishing touches','A checklist tailored to your space'].map(item => <li className="flex items-center gap-3" key={item}><Check className="size-4 text-spruce" />{item}</li>)}
+            </ul>
           </div>
         </div>
       </section>
@@ -299,59 +242,40 @@ function Index() {
           <div className="flex gap-4">
             <Leaf className="mt-1 size-6 shrink-0 text-honey" />
             <div>
-              <h3 className="font-display text-xl font-medium">Eco-safe, always</h3>
+              <h3 className="font-display text-xl font-medium">Products chosen with care</h3>
               <p className="mt-2 text-sm leading-relaxed text-primary-foreground/70">
-                Plant-based products that are safe for kids, pets, and the planet. No harsh fumes, ever.
+                Tell us about your household, pets, and product preferences. We plan the clean around your space.
               </p>
             </div>
           </div>
           <div className="flex gap-4">
             <ShieldCheck className="mt-1 size-6 shrink-0 text-honey" />
             <div>
-              <h3 className="font-display text-xl font-medium">Vetted &amp; insured</h3>
+              <h3 className="font-display text-xl font-medium">Care for your home</h3>
               <p className="mt-2 text-sm leading-relaxed text-primary-foreground/70">
-                Every pro is background-checked, bonded, and covered up to $2M. Your keys are safe with us.
+                From your first enquiry to the final check, clear communication and care for your belongings come first.
               </p>
             </div>
           </div>
           <div className="flex gap-4">
             <Wind className="mt-1 size-6 shrink-0 text-honey" />
             <div>
-              <h3 className="font-display text-xl font-medium">Quiet &amp; on time</h3>
+              <h3 className="font-display text-xl font-medium">On your schedule</h3>
               <p className="mt-2 text-sm leading-relaxed text-primary-foreground/70">
-                We arrive in the window we promise, work quietly, and text you when we're done.
+                One-off visits, weekly upkeep or a fortnightly refresh. Find the rhythm that works for you.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section id="voices" className="mx-auto max-w-6xl px-6 py-20 md:py-28">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-spruce">( 03 ) — Reviews</p>
-        <h2 className="mt-5 max-w-xl font-display text-4xl font-medium leading-tight tracking-tight md:text-5xl">
-          Neighbors who stopped noticing the mess.
-        </h2>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <blockquote
-              key={t.name}
-              className="flex flex-col justify-between rounded-2xl bg-card p-8 shadow-sm ring-1 ring-border"
-            >
-              <div>
-                <div className="flex gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="size-4 fill-honey text-honey" />
-                  ))}
-                </div>
-                <p className="mt-5 font-display text-xl italic leading-snug">“{t.quote}”</p>
-              </div>
-              <footer className="mt-8 border-t border-border pt-5">
-                <p className="text-sm font-semibold">{t.name}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t.role}</p>
-              </footer>
-            </blockquote>
-          ))}
+      <section id="voices" className="mx-auto max-w-6xl px-6 py-20 md:py-24">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-spruce">( 03 ) — A simpler routine</p>
+        <div className="mt-5 grid gap-10 md:grid-cols-2">
+          <h2 className="max-w-lg font-display text-4xl font-medium leading-tight md:text-5xl">A clean home.<br />One less thing on your mind.</h2>
+          <div className="divide-y divide-border">
+            {[['01','Tell us about your space','Share your location, the type of clean and a date that suits you.'],['02','We agree on the details','Your priorities, the scope and the price — all clear before the visit.'],['03','Come back to fresh','We take care of the clean. You get your time back.']].map(([num,title,desc]) => <div key={num} className="flex gap-5 py-5 first:pt-0"><span className="pt-1 text-xs text-spruce">{num}</span><div><h3 className="font-display text-2xl">{title}</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p></div></div>)}
+          </div>
         </div>
       </section>
 
@@ -360,22 +284,22 @@ function Index() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 md:py-28 lg:grid-cols-2">
           <div className="relative">
             <img
-              src={detailImg}
-              alt="A Clean & Co professional hand-polishing a wooden surface"
+              src={suppliesAsset.url}
+              alt="A selection of cleaning bottles, cloths and household supplies"
               width={1024}
               height={1024}
               loading="lazy"
-              className="aspect-square w-full rounded-2xl object-cover shadow-xl ring-1 ring-border"
+              className="aspect-square w-full rounded-lg object-cover shadow-xl ring-1 ring-border"
             />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-spruce">( 04 ) — Visit</p>
-            <h2 className="mt-5 font-display text-4xl font-medium leading-tight tracking-tight md:text-5xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-spruce">( 04 ) — Let’s talk</p>
+            <h2 className="mt-5 font-display text-4xl font-medium leading-tight tracking-normal md:text-5xl">
               Book your first clean.
             </h2>
             <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
-              Tell us the space and the date. We confirm within the hour and
-              arrive on time, every time.
+              A regular refresh or a one-time reset? Get in touch with your space,
+              your neighbourhood and your preferred date. We’ll take it from there.
             </p>
             <div className="mt-10 space-y-6">
               <div className="flex items-start gap-4">
@@ -384,8 +308,8 @@ function Index() {
                 </span>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Call or text</p>
-                  <p className="mt-1 font-display text-2xl font-medium">(503) 555-0148</p>
-                  <p className="text-sm text-muted-foreground">hello@cleanandco.com</p>
+                  <a href="tel:+15035550148" className="mt-1 block font-display text-2xl font-medium hover:text-spruce">(503) 555-0148</a>
+                  <a href="mailto:hello@cleanandco.com" className="text-sm text-muted-foreground hover:text-spruce">hello@cleanandco.com</a>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -393,8 +317,8 @@ function Index() {
                   <MapPin className="size-4.5" />
                 </span>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Studio</p>
-                  <p className="mt-1 text-sm leading-relaxed">418 Alder Lane, Suite 3<br />Portland, OR 97214</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Service area</p>
+                  <p className="mt-1 text-sm leading-relaxed">Portland, Oregon<br />Pearl District · Northeast · Southeast</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -407,13 +331,7 @@ function Index() {
                 </div>
               </div>
             </div>
-            <a
-              href="tel:+15035550148"
-              className="mt-10 inline-flex items-center gap-2 rounded-full bg-honey px-8 py-4 text-sm font-semibold text-accent-foreground transition-colors hover:bg-honey-deep hover:text-primary-foreground"
-            >
-              Request a booking
-              <ArrowRight className="size-4" />
-            </a>
+            <Button asChild size="lg" className="mt-10 h-12 rounded-full bg-honey text-accent-foreground hover:bg-honey-deep"><a href="mailto:hello@cleanandco.com?subject=Cleaning%20enquiry">Enquire about a clean <Mail /></a></Button>
           </div>
         </div>
       </section>
@@ -425,7 +343,7 @@ function Index() {
             Clean <span className="text-honey">&amp;</span> Co
           </p>
           <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/50">
-            © 2026 Clean &amp; Co · Licensed &amp; insured · OR #CCL-00412
+            © 2026 Clean &amp; Co · Portland, Oregon
           </p>
         </div>
       </footer>
