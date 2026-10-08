@@ -11,14 +11,13 @@ import {
   Phone,
   MapPin,
   Clock,
-  Star,
   ArrowRight,
   Leaf,
   ShieldCheck,
-  BadgeCheck,
 } from "lucide-react";
 
 import videoAsset from "@/assets/hero-cleaning.mp4.asset.json";
+import webmAsset from "@/assets/hero-cleaning.webm.asset.json";
 import posterAsset from "@/assets/cleaning-poster.jpg.asset.json";
 import cleanerAsset from "@/assets/cleaner.jpg.asset.json";
 import kitchenAsset from "@/assets/kitchen.jpg.asset.json";
@@ -72,7 +71,7 @@ const services = [
     icon: KeyRound,
     num: "04",
     title: "Move In / Move Out",
-    desc: "Handover-ready and deposit-protected. We make empty rooms gleam for the next chapter.",
+    desc: "A fresh start for the next chapter. Thorough cleaning for empty homes, from cupboards to floors.",
     price: "From $390 / visit",
   },
 ];
@@ -124,7 +123,10 @@ function Index() {
       </header>
 
       <section id="top" className="relative isolate overflow-hidden text-primary-foreground">
-        <video ref={videoRef} src={videoAsset.url} poster={posterAsset.url} muted loop playsInline preload="metadata" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} className="absolute inset-0 -z-20 h-full w-full object-cover" aria-label="Real footage of a table being carefully cleaned" />
+        <video ref={videoRef} poster={posterAsset.url} muted loop playsInline preload="metadata" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} className="absolute inset-0 -z-20 h-full w-full object-cover" aria-label="Real footage of a table being carefully cleaned">
+          <source src={webmAsset.url} type="video/webm" />
+          <source src={videoAsset.url} type="video/mp4" />
+        </video>
         <div className="hero-shade absolute inset-0 -z-10" />
         <div className="mx-auto flex min-h-[560px] max-w-6xl items-center px-6 py-20 md:min-h-[620px]">
           <div className="max-w-2xl">
@@ -152,7 +154,7 @@ function Index() {
                 Four ways we make a place shine.
               </h2>
               <p className="mt-5 max-w-xs text-muted-foreground">
-                Every visit follows our 50-point checklist, tailored to your space
+                Every visit follows a thoughtful checklist, tailored to your space
                 and your schedule.
               </p>
             </div>
@@ -223,9 +225,9 @@ function Index() {
               The gleam is the point.
             </h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">
-              Every job ends with a walk-through and a final polish pass. If the
-              light doesn't catch it, we come back — that's the guarantee in
-              writing.
+              The kitchen counter. The bathroom mirror. The corners that are easy to miss.
+              We bring a careful eye to the whole space, then finish with a final check
+              so you can simply come home and settle in.
             </p>
             <ul className="mt-8 space-y-4 border-t border-border pt-6 text-sm">
               {['Kitchen and bathroom surfaces','Floors, fixtures and finishing touches','A checklist tailored to your space'].map(item => <li className="flex items-center gap-3" key={item}><Check className="size-4 text-spruce" />{item}</li>)}
@@ -296,8 +298,8 @@ function Index() {
               Book your first clean.
             </h2>
             <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
-              Tell us the space and the date. We confirm within the hour and
-              arrive on time, every time.
+              A regular refresh or a one-time reset? Get in touch with your space,
+              your neighbourhood and your preferred date. We’ll take it from there.
             </p>
             <div className="mt-10 space-y-6">
               <div className="flex items-start gap-4">
